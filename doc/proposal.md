@@ -6,7 +6,8 @@ The web app of stock trading game also has admins who can create and manage game
 
 ### Screens
 
-
+![Homepage](HomePage.jpg)
+![Player's View](Player'sView.jpg)
 
 ## Features
 
