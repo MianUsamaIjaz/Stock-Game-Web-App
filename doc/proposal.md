@@ -6,8 +6,14 @@ The web app of stock trading game also has admins who can create and manage game
 
 ### Screens
 
-![Homepage](HomePage.jpg)
-![Player's View](Player'sView.jpg)
+#### Homepage
+<img src="HomePage.jpg" alt="Homepage" width="600" height="400">
+
+#### Player's View While Buying/Selling
+<img src="Player'sView.jpg" alt="Player's View" width="600" height="800">
+
+#### Admin's View While Creating A Game
+<img src="AdminCreatingGame.jpg" alt="Admin's View" width="600" height="400">
 
 ## Features
 
