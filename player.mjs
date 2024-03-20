@@ -112,7 +112,7 @@ export class Player {
 
         } catch (error) {
             console.error('Error loading player from MongoDB:', error);
-            throw error;
+            return;
         } finally {
             await client.close();
         }

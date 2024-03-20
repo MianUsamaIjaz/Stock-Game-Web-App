@@ -52,12 +52,18 @@ app.get("/stock/:stockName", async (req, res) => {
 
     let response = await fetch(stockURL);
     let data = await response.json();
-    res.json(data);
-
+    if (data.length > 0) {
+      res.status(200).json(data);
+      return;
+    } else {
+      res.status(404).send("Stock not Found");
+      return;
+    }
+    
   } catch (error) {
 
     console.error('Error fetching data: ', error);
-    res.status(500).send('An error occurred');
+    res.status(404).send('An Error Occured while retrieving Data');
 
   }
 
@@ -115,7 +121,7 @@ app.post("/buy", async (req, res) => {
       };
 
     } else {
-      res.send("Player don't have enough cash to buy " + quantity + " stocks of " + stockName);
+      res.status(403).send("Player don't have enough cash to buy " + quantity + " stocks of " + stockName);
       return;
     }
 
@@ -139,6 +145,11 @@ app.post("/sell", async (req, res) => {
 
   let player = await Player.getPlayerFromDB(pl);
 
+  if (!player) {
+    res.status(404).send("No Player Found!");
+    return;
+  }
+
   let stockURL = "https://financialmodelingprep.com/api/v3/quote-order/" + stockName + "?apikey=" + process.env.stockAPIKey;
 
   try {
@@ -152,7 +163,21 @@ app.post("/sell", async (req, res) => {
       s.name === stockName
     );
 
+    if (!stockFound) {
+      res.status(404).send("Stock not found!");
+      return;
+    }
+
     let correctQuantity = stockFound.quantity >= quantity;
+
+    if (!correctQuantity) {
+      res.status(403).send("Not Enough Stocks to Sell!");
+      return;
+    }
+
+    if (transactionFee > player.portfolio.cash) {
+      res.status(403).send("You don't have enough money for transaction fee!")
+    }
     
     if ( stockFound && correctQuantity && player.portfolio.cash >= transactionFee) {
 
@@ -199,10 +224,10 @@ app.post("/createPlayer", (req, res) => {
     player.addToDB();
     allPlayers.push(player);
 
-    res.send("Player created!");
+    res.status(200).send("Player created!");
 
   } else {
-      res.send("Player with this email already exists! Please try creating a Player with another email!")
+      res.status(403).send("Player with this email already exists! Please try creating a Player with another email!")
   }
 
 });
@@ -226,10 +251,10 @@ app.post("/createAdmin", (req, res) => {
     admin.addToDB();
     allAdmins.push(admin);
 
-    res.send("Admin Created");
+    res.status(200).send("Admin Created");
 
   } else {
-      res.send("Admin with this email already exists! Please try creating an Admin with another email!");
+      res.status(403).send("Admin with this email already exists! Please try creating an Admin with another email!");
   }
   
 
@@ -286,6 +311,15 @@ app.post("/registerPlayer", async (req, res) => {
     admin.email === player.email
   );
 
+  let gameCheck = allGames.find(g =>
+    g.id === gameID
+  );
+
+  if (!gameCheck) {
+    res.status(403).send("Game not found");
+    return;
+  }
+
   let playerFound = await Player.getPlayerFromDB(player);
 
   if (!playerFound) {
@@ -325,7 +359,7 @@ app.post("/registerPlayer", async (req, res) => {
 
       Game.startGame(gameFound);
       Game.save(gameFound);
-      res.status(200).send("Player was successfully Registered for the Game. Since all of the Players in capacity are Registered, the Game have now been Started!");
+      res.status(201).send("Player was successfully Registered for the Game. Since all of the Players in capacity are Registered, the Game have now been Started!");
       return;
 
     }
@@ -370,6 +404,15 @@ app.get("/gameStatus", async (req,res) => {
 app.get("/checkWinner", async (req,res) => {
 
   let gameID = req.body.gameID;
+
+  let gameCheck = allGames.find(g =>
+    g.id === gameID
+  );
+
+  if (!gameCheck) {
+    res.status(403).send("Game not found");
+    return;
+  }
 
   let game = await Game.getGameFromDB(gameID);
 
@@ -422,7 +465,7 @@ app.get("/checkWinner", async (req,res) => {
 
     }
 
-    res.send("The winner of the game is " + winner.fname + " " + winner.lname + " with the total worth of: $" + winnerWorth);
+    res.send(winner);
   }
 
 
@@ -468,9 +511,6 @@ app.get("/otherPlayersPortfolio", async (req, res) => {
   res.send(othersPortfolios);
 
 });
-
-
-
 
 
 app.listen(3000, () => {
