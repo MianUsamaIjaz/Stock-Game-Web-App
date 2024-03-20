@@ -11,6 +11,7 @@ const app = express();
 let allPlayers = [];
 let allAdmins = [];
 let allGames = [];
+let transactionFee = 1; // One Dollar transaction fee for every buy/sell
 
 app.use(express.json());// support json encoded bodies
 app.use(express.urlencoded({extended: true}));//incoming objects are strings or arrays
@@ -81,7 +82,7 @@ app.post("/buy", async (req, res) => {
     let stockPrice = data[0].price;
     let alreadyBought = false;
     
-    if ( (stockPrice * quantity) <= player.portfolio.cash) {
+    if ( ((stockPrice * quantity) + transactionFee) <= player.portfolio.cash) {
 
       // If Player have already bought the stock
       player.portfolio.stocks.forEach(data => {
@@ -91,7 +92,7 @@ app.post("/buy", async (req, res) => {
           alreadyBought = true;
           data.quantity += quantity;
           data.lastBuyingPrice = stockPrice;
-          player.portfolio.cash = player.portfolio.cash - (stockPrice * quantity);
+          player.portfolio.cash = player.portfolio.cash - (stockPrice * quantity) - transactionFee;
           Player.save(player);
 
         };
@@ -108,7 +109,7 @@ app.post("/buy", async (req, res) => {
           };
       
           player.portfolio.stocks.push(stockBought);
-          player.portfolio.cash = player.portfolio.cash - (stockPrice * quantity);
+          player.portfolio.cash = player.portfolio.cash - (stockPrice * quantity) - transactionFee;
           Player.save(player);
 
       };
@@ -153,12 +154,12 @@ app.post("/sell", async (req, res) => {
 
     let correctQuantity = stockFound.quantity >= quantity;
     
-    if ( stockFound && correctQuantity ) {
+    if ( stockFound && correctQuantity && player.portfolio.cash >= transactionFee) {
 
       stockFound.quantity = stockFound.quantity - quantity;
       stockFound.lastSellingPrice = stockPrice;
 
-      player.portfolio.cash = player.portfolio.cash + (stockPrice * quantity);
+      player.portfolio.cash = player.portfolio.cash + (stockPrice * quantity) - transactionFee;
       Player.save(player);
 
     } else {
@@ -228,7 +229,7 @@ app.post("/createAdmin", (req, res) => {
     res.send("Admin Created");
 
   } else {
-      res.send("Admin with this email already exists! Please try creating an Admin with another email!")
+      res.send("Admin with this email already exists! Please try creating an Admin with another email!");
   }
   
 
@@ -239,75 +240,236 @@ app.post("/createGame", (req, res) => {
 
   let id = req.body.id;
   let name = req.body.name;
-  let players = req.body.players;
   let owner = req.body.owner;
 
   let adminAccess = allAdmins.find(admin =>
     admin.fname === owner.fname && admin.lname === owner.lname && admin.email === owner.email
   );
 
+  if (!adminAccess) {
+    res.status(403).send("Only Admins can create the game!");
+    return;
+  }
+
   let gameMatched = allGames.find(game =>
     game.id === id
   );
 
+  if (gameMatched) {
+    res.status(200).send("Game Already Exists!");
+    return;
+  }
+
   if (adminAccess && !gameMatched) {
 
-    let game = new Game( id, name, players, owner);
+    let game = new Game( id, name, owner);
     
 
     game.addToDB();
     allGames.push(game);
 
-    res.send(game);
+    res.status(200).send("The Game have been successfully created!");
 
   } else {
-    res.send("Could not create a game!")
+    res.status(404).send("Could not create a game!")
   }
 
 });
 
 // Registers a player for the game
-app.post("/registerPlayer", (req, res) => {
+app.post("/registerPlayer", async (req, res) => {
 
-  let gameName = req.body.gameName;
+  let gameID = req.body.gameID;
   let player = req.body.player;
 
   let adminCheck = allAdmins.find(admin =>
     admin.email === player.email
   );
 
-  if (adminCheck) {
-    res.send("Admins cannot join a game!");
+  let playerFound = await Player.getPlayerFromDB(player);
+
+  if (!playerFound) {
+    res.status(404).send("The Player does not exist, please create this player first!");
     return;
   }
 
-  let gameFound = allGames.find(game =>
-    game.name === gameName
-  );
+  if (adminCheck) {
+    res.status(403).send("Admins cannot join a game!");
+    return;
+  }
+
+  let gameFound = await Game.getGameFromDB(gameID);
 
   if (gameFound) {
 
-    let playerExists = gameFound.players.find(p =>
+    let playerExistsinGame = gameFound.registeredPlayers.find(p =>
       p.email === player.email
     );
 
-    if (playerExists) {
-      res.send("Player is already in the Game!");
+    if (playerExistsinGame) {
+      res.status(403).send("Player is already in the Game!");
       return;
     }
 
-    gameFound.players.push(player);
+    let cap = gameFound.registeredPlayers.length;
+
+    if (cap >= 4) {
+      res.status(403).send("Cannot Register the Player, since the Game have already been started!");
+      return;
+    }
+
+    gameFound.registeredPlayers.push(player);
     Game.save(gameFound);
 
-    res.send(gameFound);
+    if (gameFound.registeredPlayers.length == 4) {
+
+      Game.startGame(gameFound);
+      Game.save(gameFound);
+      res.status(200).send("Player was successfully Registered for the Game. Since all of the Players in capacity are Registered, the Game have now been Started!");
+      return;
+
+    }
+
+    res.status(200).send("Player was successfully Registered for the Game.");
 
   } else {
 
-    res.send("Game not found!");
+    res.status(404).send("Game not found!");
 
   }
 
 });
+
+app.get("/gameStatus", async (req,res) => {
+
+  let gameID = req.body.gameID;
+  
+
+  let game = await Game.getGameFromDB(gameID);
+
+  if (!game) {
+    res.status(404).send("Game not found!")
+  }
+
+  if (game.startTime == 0) {
+    res.status(200).send("The Game hasn't started yet!")
+  }
+
+  let result = Game.hasGameEnded(game);
+
+  if (result) {
+    res.status(200).send("The Game have been ended!");
+    return;
+  } else {
+    res.status(200).send("The Game is still in progress!");
+    return;
+  }
+  
+});
+
+app.get("/checkWinner", async (req,res) => {
+
+  let gameID = req.body.gameID;
+
+  let game = await Game.getGameFromDB(gameID);
+
+  if (game.startTime == 0) {
+    res.status(403).send("The Game hasn't started!");
+    return;
+  }
+
+  let result = Game.hasGameEnded(game);
+
+  if (result) {
+
+    let winnerWorth = 0;
+    let winner = null;
+
+    for (let i = 0; i < game.registeredPlayers.length; i++) {
+
+      let player = await Player.getPlayerFromDB(game.registeredPlayers[i]);
+
+      let playerTotalWorth = 0;
+
+      for (let stock of player.portfolio.stocks) {
+
+        let stockURL = "https://financialmodelingprep.com/api/v3/quote-order/" + stock.name + "?apikey=" + process.env.stockAPIKey;
+
+        try {
+
+          let response = await fetch(stockURL);
+          let data = await response.json();
+
+          let stockPrice = data[0].price;
+
+          playerTotalWorth += stockPrice * stock.quantity;
+
+        } catch (error) {
+
+            console.error('Error fetching data: ', error);
+            res.status(500).send('An error occurred');
+  
+        }
+      }
+
+      playerTotalWorth += player.portfolio.cash;
+      //console.log(playerTotalWorth);
+
+      if (playerTotalWorth > winnerWorth) {
+        winnerWorth = playerTotalWorth;
+        winner = player;
+      }
+
+    }
+
+    res.send("The winner of the game is " + winner.fname + " " + winner.lname + " with the total worth of: $" + winnerWorth);
+  }
+
+
+});
+
+// First Own Feature (Viewing other player's portfolios)
+app.get("/otherPlayersPortfolio", async (req, res) => {
+
+  let gameID = req.body.gameID;
+  let player = req.body.player;  // The player requesting to view other's portfolios
+
+  let game = await Game.getGameFromDB(gameID);
+  if (!game) {
+    res.status(404).send("Game not found!");
+    return;
+  }
+
+  player = await Player.getPlayerFromDB(player);
+  if (!player) {
+    res.status(404).send("Player not found!");
+    return;
+  } 
+
+  let othersPortfolios = [];
+
+  for (let i = 0; i < game.registeredPlayers.length; i++) {
+
+    let otherPlayer = await Player.getPlayerFromDB(game.registeredPlayers[i]);
+
+    if (!(otherPlayer.email === player.email)) {
+
+      let view = {
+        name: otherPlayer.fname + " " + otherPlayer.lname,
+        portfolio: otherPlayer.portfolio
+      };
+
+      othersPortfolios.push(view);
+
+    }
+    
+  }
+
+  res.send(othersPortfolios);
+
+});
+
+
 
 
 

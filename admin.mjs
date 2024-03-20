@@ -36,9 +36,6 @@ export class Admin {
 
     }
 
-    match(fname, lname, email) {
-        return this.fname === fname && this.lname === lname && this.email === email;
-    }
 
     static async load() {
         try {

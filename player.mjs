@@ -35,15 +35,7 @@ export class Player {
           console.error('Error adding player to database:', err);
         }
 
-    }
-
-    match(fname, lname, email) {
-        return this.fname === fname && this.lname === lname && this.email === email;
-    }
-
-    getInfo() {
-        return this;
-    }
+    };
 
     static async load() {
         try {
@@ -71,9 +63,9 @@ export class Player {
             await client.close();
         }
 
-      }
+    };
 
-      static async save(player) {
+    static async save(player) {
 
         try {
 
@@ -96,10 +88,10 @@ export class Player {
             await client.close();
         }
 
-      }
+    };
 
-      static async getPlayerFromDB(player) {
-
+    static async getPlayerFromDB(player) {
+        
         try {
 
             await client.connect();
@@ -110,13 +102,13 @@ export class Player {
 
             for (let data of playerData) {
 
-                if ( data.email === player.email ) {
+                if ( data.email === player.email && data.fname === player.fname && data.lname === player.lname) {
                     return data;
                 };
 
             };
 
-            return "No matching player found in DB!";
+            return;
 
         } catch (error) {
             console.error('Error loading player from MongoDB:', error);
@@ -125,7 +117,7 @@ export class Player {
             await client.close();
         }
         
-      }
+    };
 
 
 }
