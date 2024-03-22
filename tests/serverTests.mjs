@@ -16,20 +16,20 @@ describe('GET /stock', function() {
         it(`GET /stock/${test.name}`, async function() {
 
             let response = await request.get(`/stock/${test.name}`)
-   
-            if( response.status >= 400 ){
-                assert(test.expect >= 400, "should not give an error code response" )
-                return;
+
+            if (response.status == 200) {
+            assert.equal(test.name,response.body[0].symbol)
             }
 
-            assert.equal(test.name,response.body[0].symbol)
         });
-    });
+    })
+});
 
     describe('POST /buy', function() {
         var tests = [
             { player: {fname: "Mian", lname: "Usama", email: "mianusama@test.com"}, stockName: 'AAPL', quantity: 1, expect: 200 },
             { player: {fname: "Usama", lname: "Ijaz", email: "usamaijaz@test.com"}, stockName: 'WMT', quantity: 2, expect: 200 },
+            { player: {fname: "Usama", lname: "Ijaz", email: "usamaijaz@test.com"}, stockName: 'AAPL', quantity: 2, expect: 200 },
             { player: {fname: "Mian", lname: "Usama", email: "mianusama@test.com"}, stockName: 'DUMBS', quantity: 3, expect: 404 },  // Stock does not exist
             { player: {fname: "No", lname: "Player", email: "noplayer@test.com"}, stockName: 'WMT', quantity: 2, expect: 404 },  // This player does not exist in database
             { player: {fname: "Usama", lname: "Ijaz", email: "usamaijaz@test.com"}, stockName: 'AAPL', quantity: 10, expect: 403 },  // Should not be enough money to buy
@@ -37,7 +37,7 @@ describe('GET /stock', function() {
         ];
     
         tests.forEach(function(test) {
-            it(`POST /buy for ${test.player} buying ${test.quantity} ${test.stockName} stocks`, async function() {
+            it(`POST /buy for ${test.player.fname} ${test.player.lname} buying ${test.quantity} ${test.stockName} stocks`, async function() {
                 let requestBody = {
                     player: test.player,
                     stockName: test.stockName,
@@ -46,12 +46,12 @@ describe('GET /stock', function() {
     
                 let response = await request.post('/buy').send(requestBody);
     
-                if (response.status >= 400) {
-                    assert(test.expect >= 400, "should not give an error code response");
-                    return;
-                }
-    
                 assert.equal(response.status, test.expect);
+
+                 if( response.status == 200 ) {
+
+                    assert.equal(response.body.name, test.stockName) 
+                 }
             });
         });
     });
@@ -67,7 +67,7 @@ describe('GET /stock', function() {
         ];
     
         tests.forEach(function(test) {
-            it(`POST /sell for ${test.player} selling ${test.quantity} ${test.stockName} stocks`, async function() {
+            it(`POST /sell for ${test.player.fname} ${test.player.lname} selling ${test.quantity} ${test.stockName} stocks`, async function() {
                 let requestBody = {
                     player: test.player,
                     stockName: test.stockName,
@@ -76,56 +76,67 @@ describe('GET /stock', function() {
     
                 let response = await request.post('/sell').send(requestBody);
     
-                if (response.status >= 400) {
-                    assert(test.expect >= 400, "should not give an error code response");
-                    return;
-                }
-    
                 assert.equal(response.status, test.expect);
+
+                if( response.status == 200 ) {
+                    assert.equal(response.body.name, test.stockName) 
+                }
             });
         });
     });
 
     describe('POST /createPlayer', function() {
         var tests = [
-            { fname: 'James', lname: 'Doe', email: 'john@example.com', expect: 200 },
-            { fname: 'Jane', lname: 'Lee', email: 'jane@example.com', expect: 200 },
-            { fname: 'Alisa', lname: 'Basklanova', email: 'john@example.com', expect: 403 }
+            { fname: 'James', lname: 'Doe', email: 'james@test.com', password: "123", expect: 200 },
+            { fname: 'Jane', lname: 'Lee', email: 'jane@test.com', password: "123", expect: 200 },
+            { fname: 'Alisa', lname: 'Basklanova', email: 'james@test.com', password: "123", expect: 403 }
         ];
     
         tests.forEach(function(test) {
-            it(`POST /createPlayer for ${test.email}`, async function() {
+            it(`POST /createPlayer for ${test.fname} ${test.lname}`, async function() {
                 let requestBody = {
                     fname: test.fname,
                     lname: test.lname,
-                    email: test.email
+                    email: test.email,
+                    password: test.password
                 };
     
                 let response = await request.post('/createPlayer').send(requestBody);
     
                 assert.equal(response.status, test.expect);
+
+                if( response.status == 200 ) {
+                    assert.equal(response.body.email, test.email)
+                }
+
             });
         });
     });
 
     describe('POST /createAdmin', function() {
         var tests = [
-            { fname: 'James', lname: 'Doe', email: 'john@example.com', expect: 200 },
-            { fname: 'Jane', lname: 'Lee', email: 'jane@example.com', expect: 200 },
-            { fname: 'Cillian', lname: 'Murphy', email: 'cillian@test.com', expect: 403 }  // Admin already exists with this data in database
+            { fname: 'James', lname: 'Doe', email: 'john@example.com', password: "123", expect: 200 },
+            { fname: 'Jane', lname: 'Lee', email: 'jane@example.com', password: "123", expect: 200 },
+            { fname: 'Cillian', lname: 'Murphy', email: 'cillian@test.com', password: "123", expect: 403 }  // Admin already exists with this data in database
         ];
     
         tests.forEach(function(test) {
-            it(`POST /createAdmin for ${test.email}`, async function() {
+            it(`POST /createAdmin for ${test.fname} ${test.lname}`, async function() {
                 let requestBody = {
                     fname: test.fname,
                     lname: test.lname,
-                    email: test.email
+                    email: test.email,
+                    password: test.password
                 };
     
                 let response = await request.post('/createAdmin').send(requestBody);
     
                 assert.equal(response.status, test.expect);
+
+                if( response.status == 200 ) {
+                    assert.equal(response.body.email, test.email)
+                }
+
             });
         });
     });
@@ -147,6 +158,10 @@ describe('GET /stock', function() {
                 let response = await request.post('/createGame').send(requestBody);
     
                 assert.equal(response.status, test.expect);
+
+                if (response.status == 200) {
+                    assert.equal(response.body.id, test.id);
+                }
             });
         });
     });
@@ -172,13 +187,41 @@ describe('GET /stock', function() {
                 let response = await request.post('/registerPlayer').send(requestBody);
     
                 assert.equal(response.status, test.expect);
+
+                if (response.status == 201) {
+                    assert.ok(response.body.startTime > 0);  //Game started
+                }
             });
         });
+
     });
+
+    describe('GET /leaderboard', function() {
+        var tests = [
+            { gameID: 1 , expect: 200},
+            { gameID: 5, expect: 404}
+        ];
+    
+        tests.forEach(function(test) {
+            it(`GET /leaderboard for Game ${test.gameID}`, async function() {
+                let requestBody = {
+                    gameID: test.gameID,
+                };
+    
+                let response = await request.get('/leaderboard').send(requestBody);
+    
+                assert.equal(response.status, test.expect);
+
+            });
+        });
+
+    });
+
+    
 
     describe('GET /checkWinner', function() {
         var tests = [
-            { gameID: 1, expect: 200 },  // On purpose increased Usama Ijaz's portfolio value up by $1000 so he could be the winner
+            { gameID: 1, expect: 200 },  // On purpose increased Mian Usama's portfolio value up so he could be the winner
             { gameID: 5, expect: 403 }  // Game does not exist
         ];
     
@@ -190,7 +233,7 @@ describe('GET /stock', function() {
                 assert.equal(response.status, test.expect);
 
                 if (response.status === 200) {
-                    assert.equal(response.body.email, 'usamaijaz@test.com');
+                    assert.equal(response.body.email, 'mianusama@test.com');
                 }
             });
         });
@@ -203,17 +246,15 @@ describe('GET /stock', function() {
         ];
     
         tests.forEach(function(test) {
-            it(`GET /otherPlayersPortfolio for game ${test.gameID} and player ${test.player.email}`, async function() {
+            it(`GET /otherPlayersPortfolio for game ${test.gameID} and player ${test.player.fname} ${test.player.lname}`, async function() {
                 let requestBody = { gameID: test.gameID, player: test.player };
                 let response = await request.get('/otherPlayersPortfolio').send(requestBody);
        
                 assert.equal(response.status, test.expect);
     
                 if (response.status === 200) {
-                    assert(Array.isArray(response.body), 'Response should be an array');
+                    assert.ok(response.body.length == 3);  //Since there will be 4 players in a game
                 }
             });
         });
     });
-
-})

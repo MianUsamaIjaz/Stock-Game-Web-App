@@ -8,11 +8,12 @@ let client = new MongoClient(uri);
 
 export class Admin {
 
-    constructor(fname, lname, email) {
+    constructor(fname, lname, email, password) {
 
         this.fname = fname;
         this.lname = lname;
         this.email = email;
+        this.password = password;
         this.isAdmin = true;  //Gives Admin Capabilities
         
     };
@@ -48,7 +49,7 @@ export class Admin {
             let allAdmins = [];
 
             for (let data of adminData) {
-                let admin = new Admin(data.fname, data.lname, data.email);
+                let admin = new Admin(data.fname, data.lname, data.email, data.password);
                 allAdmins.push(admin);
             }
 
@@ -59,9 +60,7 @@ export class Admin {
         } catch (error) {
             console.error('Error loading admins from MongoDB:', error);
             throw error;
-        } finally {
-            await client.close();
-        }
+        } 
 
       }
 

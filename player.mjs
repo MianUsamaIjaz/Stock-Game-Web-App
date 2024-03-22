@@ -8,10 +8,11 @@ let client = new MongoClient(uri);
 
 export class Player {
 
-    constructor(fname, lname, email) {
+    constructor(fname, lname, email, password) {
         this.fname = fname;
         this.lname = lname;
         this.email = email;
+        this.password = password;
         this.portfolio = {
             cash: 1000,
             stocks: []
@@ -48,7 +49,7 @@ export class Player {
             let allPlayers = [];
 
             for (let data of playerData) {
-                let player = new Player(data.fname, data.lname, data.email, data.portfolio);
+                let player = new Player(data.fname, data.lname, data.email, data.password, data.portfolio);
                 allPlayers.push(player);
             }
 
@@ -59,8 +60,6 @@ export class Player {
         } catch (error) {
             console.error('Error loading players from MongoDB:', error);
             throw error;
-        } finally {
-            await client.close();
         }
 
     };
@@ -84,8 +83,6 @@ export class Player {
         } catch (error) {
             console.error('Error saving the player to MongoDB:', error);
             throw error;
-        } finally {
-            await client.close();
         }
 
     };
@@ -113,9 +110,7 @@ export class Player {
         } catch (error) {
             console.error('Error loading player from MongoDB:', error);
             return;
-        } finally {
-            await client.close();
-        }
+        } 
         
     };
 

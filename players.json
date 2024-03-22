@@ -1,0 +1,79 @@
+[{
+  "_id": {
+    "$oid": "65faa783db61d1019d7ac57e"
+  },
+  "fname": "Mian",
+  "lname": "Usama",
+  "email": "mianusama@test.com",
+  "portfolio": {
+    "cash": 1986,
+    "stocks": [
+      {
+        "name": "AAPL",
+        "quantity": 2,
+        "lastBuyingPrice": 171.37,
+        "lastSellingPrice": 171.37
+      }
+    ]
+  },
+  "password": "123"
+},
+{
+  "_id": {
+    "$oid": "65faa78fdb61d1019d7ac57f"
+  },
+  "fname": "Usama",
+  "lname": "Ijaz",
+  "email": "usamaijaz@test.com",
+  "portfolio": {
+    "cash": 654.26,
+    "stocks": [
+      {
+        "lastBuyingPrice": 171.37,
+        "lastSellingPrice": 171.37,
+        "name": "AAPL",
+        "quantity": 8
+      },
+      {
+        "name": "WMT",
+        "quantity": 0,
+        "lastBuyingPrice": 61.45,
+        "lastSellingPrice": 61.45
+      }
+    ]
+  },
+  "password": "123"
+},
+{
+  "_id": {
+    "$oid": "65faa7b8db61d1019d7ac581"
+  },
+  "fname": "John",
+  "lname": "Doe",
+  "email": "johndoe@test.com",
+  "portfolio": {
+    "cash": 1000,
+    "stocks": []
+  },
+  "password": "123"
+},
+{
+  "_id": {
+    "$oid": "65faa9ee9a73da4511b198ee"
+  },
+  "fname": "Tony",
+  "lname": "Stark",
+  "email": "tonystark@test.com",
+  "portfolio": {
+    "cash": 630.5,
+    "stocks": [
+      {
+        "name": "WMT",
+        "quantity": 6,
+        "lastBuyingPrice": 61.25,
+        "lastSellingPrice": null
+      }
+    ]
+  },
+  "password": "123"
+}]

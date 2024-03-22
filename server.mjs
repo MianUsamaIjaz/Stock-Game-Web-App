@@ -78,12 +78,22 @@ app.post("/buy", async (req, res) => {
 
   let player = await Player.getPlayerFromDB(pl);
 
+  if (!player) {
+    res.status(404).send("No Player Found!");
+    return;
+  }
+
   let stockURL = "https://financialmodelingprep.com/api/v3/quote-order/" + stockName + "?apikey=" + process.env.stockAPIKey;
 
   try {
 
     let response = await fetch(stockURL);
     let data = await response.json();
+
+    if (!(data.length > 0)) {
+      res.status(404).send("Data from the API not found!");
+      return;
+    }
 
     let stockPrice = data[0].price;
     let alreadyBought = false;
@@ -100,7 +110,8 @@ app.post("/buy", async (req, res) => {
           data.lastBuyingPrice = stockPrice;
           player.portfolio.cash = player.portfolio.cash - (stockPrice * quantity) - transactionFee;
           Player.save(player);
-
+          res.status(200).send(data);
+          return;
         };
     
       });
@@ -117,6 +128,7 @@ app.post("/buy", async (req, res) => {
           player.portfolio.stocks.push(stockBought);
           player.portfolio.cash = player.portfolio.cash - (stockPrice * quantity) - transactionFee;
           Player.save(player);
+          res.status(200).send(stockBought);
 
       };
 
@@ -124,8 +136,6 @@ app.post("/buy", async (req, res) => {
       res.status(403).send("Player don't have enough cash to buy " + quantity + " stocks of " + stockName);
       return;
     }
-
-    res.send(player);
 
   } catch (error) {
 
@@ -157,6 +167,11 @@ app.post("/sell", async (req, res) => {
     let response = await fetch(stockURL);
     let data = await response.json();
 
+    if (!(data.length > 0)) {
+      res.status(404).send("Data from the API not found!");
+      return;
+    }
+
     let stockPrice = data[0].price;
 
     let stockFound = player.portfolio.stocks.find(s =>
@@ -186,13 +201,12 @@ app.post("/sell", async (req, res) => {
 
       player.portfolio.cash = player.portfolio.cash + (stockPrice * quantity) - transactionFee;
       Player.save(player);
+      res.status(200).send(stockFound);
 
     } else {
-      res.send("Player don't have stocks of " + stockName + " to sell.");
+      res.status(403).send("Player don't have stocks of " + stockName + " to sell.");
       return;
     }
-
-    res.send(player);
 
   } catch (error) {
 
@@ -211,6 +225,7 @@ app.post("/createPlayer", (req, res) => {
   let fname = req.body.fname;
   let lname = req.body.lname;
   let email = req.body.email;
+  let password = req.body.password;
 
 
   let playerMatched = allPlayers.find(player =>
@@ -219,12 +234,12 @@ app.post("/createPlayer", (req, res) => {
   
   if (!playerMatched) {
 
-    let player = new Player(fname, lname, email);
+    let player = new Player(fname, lname, email, password);
 
     player.addToDB();
     allPlayers.push(player);
 
-    res.status(200).send("Player created!");
+    res.status(200).send(player);
 
   } else {
       res.status(403).send("Player with this email already exists! Please try creating a Player with another email!")
@@ -238,6 +253,7 @@ app.post("/createAdmin", (req, res) => {
   let fname = req.body.fname;
   let lname = req.body.lname;
   let email = req.body.email;
+  let password = req.body.password;
 
 
   let adminMatched = allAdmins.find(admin =>
@@ -246,12 +262,12 @@ app.post("/createAdmin", (req, res) => {
   
   if (!adminMatched) {
 
-    let admin = new Admin(fname, lname, email);
+    let admin = new Admin(fname, lname, email, password);
 
     admin.addToDB();
     allAdmins.push(admin);
 
-    res.status(200).send("Admin Created");
+    res.status(200).send(admin);
 
   } else {
       res.status(403).send("Admin with this email already exists! Please try creating an Admin with another email!");
@@ -293,7 +309,7 @@ app.post("/createGame", (req, res) => {
     game.addToDB();
     allGames.push(game);
 
-    res.status(200).send("The Game have been successfully created!");
+    res.status(200).send(game);
 
   } else {
     res.status(404).send("Could not create a game!")
@@ -359,7 +375,7 @@ app.post("/registerPlayer", async (req, res) => {
 
       Game.startGame(gameFound);
       Game.save(gameFound);
-      res.status(201).send("Player was successfully Registered for the Game. Since all of the Players in capacity are Registered, the Game have now been Started!");
+      res.status(201).send(gameFound);
       return;
 
     }
@@ -465,7 +481,11 @@ app.get("/checkWinner", async (req,res) => {
 
     }
 
-    res.send(winner);
+    res.status(200).send(winner);
+
+  } else {
+    res.status(500).send("Game not ended yet!");
+    return;
   }
 
 
@@ -512,6 +532,46 @@ app.get("/otherPlayersPortfolio", async (req, res) => {
 
 });
 
+app.get("/leaderboard", async (req, res) => {
+
+  let gameID = req.body.gameID;
+
+  let game = await Game.getGameFromDB(gameID);
+
+  if (!game) {
+    res.status(404).send("Game not found!");
+    return;
+  }
+
+
+  if (game.registeredPlayers.length !== 4) {
+    res.status(400).send("Game must have exactly 4 players for leaderboard.");
+    return;
+  }
+
+  let gamePlayers = [];
+
+  for (let i = 0; i < game.registeredPlayers.length; i++) {
+    let player = await Player.getPlayerFromDB(game.registeredPlayers[i]);
+    if (!player) {
+      res.status(404).send("Player not found!");
+      return;
+    }
+    gamePlayers.push(player);
+  }
+
+  gamePlayers.sort((a, b) => b.portfolio.cash - a.portfolio.cash);
+
+  let leaderboard = gamePlayers.map(player => {
+    return {
+      name: `${player.fname} ${player.lname}`,
+      cash: player.portfolio.cash
+    };
+  });
+
+  res.status(200).send(leaderboard);
+
+});
 
 app.listen(3000, () => {
     console.log("Server started on port 3000");

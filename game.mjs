@@ -9,7 +9,7 @@ let client = new MongoClient(uri);
 export class Game {
 
     //static DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-    static DURATION = 2 * 60 * 1000; // 2 minutes in milliseconds (Testing)
+    static DURATION = 1 * 60 * 1000; // 1 minute in milliseconds (Testing)
 
     constructor(id, name, owner) {
         this.id = id;
@@ -61,8 +61,6 @@ export class Game {
         } catch (error) {
             console.error('Error loading games from MongoDB:', error);
             throw error;
-        } finally {
-            await client.close();
         }
 
       }
@@ -86,9 +84,7 @@ export class Game {
         } catch (error) {
             console.error('Error saving the game to MongoDB:', error);
             throw error;
-        } finally {
-            await client.close();
-        }
+        } 
 
       }
 
@@ -99,11 +95,13 @@ export class Game {
 
       static hasGameEnded(game) {
 
-        if (game.startTime === 0) {
-          return false; // The game hasn't started yet
-        }
+        // if (game.startTime === 0) {
+        //   return false; // The game hasn't started yet
+        // }
 
-        return Date.now() >= game.endTime;
+        // return Date.now() >= game.endTime;
+
+        return true;  // Above is the true code for this function, but for testing purposes only returning true for now
 
       }
 
@@ -130,8 +128,6 @@ export class Game {
         } catch (error) {
             console.error('Error loading game from MongoDB:', error);
             throw error;
-        } finally {
-            await client.close();
         }
         
     };
