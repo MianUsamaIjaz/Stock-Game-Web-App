@@ -114,8 +114,10 @@ To set up and run the project, follow these steps:
 2. Navigate to the project directory in your terminal.
 3. Run the following command to install all required packages:
 
-   ```bash
-   npm install
+    ```bash
+    npm install
+4. Create a .env file and set `stockAPIKey = eBVCeMBXRMkLRfR496hXGpWOxgSwFcaS` 
+
 
 ## 2. Database Setup
 
