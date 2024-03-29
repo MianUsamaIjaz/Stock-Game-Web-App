@@ -1,4 +1,6 @@
 import { MongoClient } from 'mongodb';
+import bcrypt from "bcryptjs";
+
 
 
 let uri = "mongodb://localhost:27017";
@@ -99,7 +101,7 @@ export class Player {
 
             for (let data of playerData) {
 
-                if ( data.email === player.email && data.fname === player.fname && data.lname === player.lname) {
+                if ( data.email === player.email ) {
                     return data;
                 };
 

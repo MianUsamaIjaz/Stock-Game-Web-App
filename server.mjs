@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import { Player } from './player.mjs';
 import { Admin } from './admin.mjs';
 import { Game } from './game.mjs';
@@ -15,6 +16,7 @@ let transactionFee = 1; // One Dollar transaction fee for every buy/sell
 
 app.use(express.json());// support json encoded bodies
 app.use(express.urlencoded({extended: true}));//incoming objects are strings or arrays
+app.use(cors());
 
 // Loading all admins from database to the server
 Admin.load().then(loadedAdmins => {
@@ -573,6 +575,31 @@ app.get("/leaderboard", async (req, res) => {
 
 });
 
-app.listen(3000, () => {
-    console.log("Server started on port 3000");
+app.post("/signin", async (req, res) => {
+
+  let email = req.body.email;
+  let password = req.body.password;
+
+  let playerMatched = allPlayers.find(player =>
+    player.email === email
+  );
+  
+  if (playerMatched) {
+
+    let player = await Player.getPlayerFromDB(playerMatched);
+
+    if (password === player.password && email === player.email) {
+      res.status(200).send("Successfully Signed In!")
+    } else {
+      res.status(404).send("Invalid Credentials!")
+    }
+
+  } else {
+      res.status(404).send("Player not found!")
+  }
+
+});
+
+app.listen(4000, () => {
+    console.log("Server started on port 4000");
 });

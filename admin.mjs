@@ -64,5 +64,32 @@ export class Admin {
 
       }
 
+      static async getAdminFromDB(admin) {
+        
+        try {
+
+            await client.connect();
+            let database = client.db(dbName);
+            let collection = database.collection(collectionName);
+    
+            let adminData = await collection.find({}).toArray();
+
+            for (let data of adminData) {
+
+                if ( data.email === admin.email ) {
+                    return data;
+                };
+
+            };
+
+            return;
+
+        } catch (error) {
+            console.error('Error loading admin from MongoDB:', error);
+            return;
+        } 
+        
+    };
+
 
 }
