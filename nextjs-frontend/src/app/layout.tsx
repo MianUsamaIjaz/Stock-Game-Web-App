@@ -19,12 +19,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession();
+  
   return (
     <html lang="en">
       <body className={inter.className}>
         <SessionProvider session={session}>
           <div className="mx-auto max-w-5xl text-2xl gap-2 mb-10">
-            <Navbar />
+            <Navbar user={session?.user} />
             {children}
           </div>
         </SessionProvider>

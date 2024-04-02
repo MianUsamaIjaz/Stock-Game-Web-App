@@ -117,6 +117,8 @@ export class Game {
 
             for (let data of gameData) {
 
+                console.log("data id : " + data.id);
+
                 if ( data.id === gameID ) {
                     return data;
                 };

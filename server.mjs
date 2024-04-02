@@ -16,7 +16,9 @@ let transactionFee = 1; // One Dollar transaction fee for every buy/sell
 
 app.use(express.json());// support json encoded bodies
 app.use(express.urlencoded({extended: true}));//incoming objects are strings or arrays
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+}));
 
 // Loading all admins from database to the server
 Admin.load().then(loadedAdmins => {
@@ -70,6 +72,22 @@ app.get("/stock/:stockName", async (req, res) => {
   }
 
 });
+
+app.get("/player/:playerEmail" , async (req, res) => {
+
+  let email = req.data.params;
+
+  let user = {email: email};
+
+  let player = await Player.getPlayerFromDB(user);
+
+  if (player) {
+    res.status(200).send(player);
+  } else {
+    res.status(404).send(null);
+  }
+
+})
 
 // Player buying a stock
 app.post("/buy", async (req, res) => {
@@ -534,9 +552,9 @@ app.get("/otherPlayersPortfolio", async (req, res) => {
 
 });
 
-app.get("/leaderboard", async (req, res) => {
+app.post("/leaderboard", async (req, res) => {
 
-  let gameID = req.body.gameID;
+  let gameID = parseInt(req.body.gameID);
 
   let game = await Game.getGameFromDB(gameID);
 
@@ -544,7 +562,6 @@ app.get("/leaderboard", async (req, res) => {
     res.status(404).send("Game not found!");
     return;
   }
-
 
   if (game.registeredPlayers.length !== 4) {
     res.status(400).send("Game must have exactly 4 players for leaderboard.");
@@ -597,6 +614,22 @@ app.post("/signin", async (req, res) => {
   } else {
       res.status(404).send("Player not found!")
   }
+
+});
+
+app.post("/getAdmin", async (req, res) => {
+
+  let email = req.body.email;
+
+  let testAdmin = await new Admin("", "", email, "");
+
+  let admin = await Admin.getAdminFromDB(testAdmin);
+
+  if (admin) {
+    res.status(200).send(true);
+  } else {
+    res.status(404).send(false);
+  };
 
 });
 

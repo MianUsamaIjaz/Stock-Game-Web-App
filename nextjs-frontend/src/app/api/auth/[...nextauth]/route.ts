@@ -21,6 +21,7 @@ export const authOptions: any = {
         lname: { label: "Last Name", type: "text" },
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "text" },
+        isAdmin: { label: "Admin", type: "boolean"},
       },
       async authorize(credentials: any) {
         await client.connect();
@@ -32,6 +33,7 @@ export const authOptions: any = {
 
           if (!user) {
             user = await Admin.getAdminFromDB(player);
+            credentials.isAdmin = true;
           }
 
           if (user) {
@@ -57,7 +59,6 @@ export const authOptions: any = {
   callbacks: {
     async signIn({ user, account }: { user: AuthUser; account: Account }) {
       if (account?.provider == "credentials") {
-        console.log("here");
         
         return true;
       }
@@ -70,9 +71,13 @@ export const authOptions: any = {
           const existingUser = await Player.getPlayerFromDB(player);
           if (!existingUser) {
             const newUser = new Player(user.name, "", user.email, "");
-
             await newUser.addToDB();
             return true;
+          } else {
+            let admin = await Admin.getAdminFromDB(player);
+            if (admin) {
+              return true;
+            }
           }
           return true;
         } catch (err) {
@@ -81,6 +86,7 @@ export const authOptions: any = {
         }
       }
     },
+
   },
 };
 

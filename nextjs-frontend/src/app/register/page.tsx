@@ -12,7 +12,7 @@ let Register = () => {
 
   useEffect(() => {
     if (sessionStatus === "authenticated") {
-      router.replace("/dashboard");
+      router.replace("/");
     }
   }, [sessionStatus, router]);
 
@@ -67,7 +67,18 @@ let Register = () => {
   };
 
   if (sessionStatus === "loading") {
-    return <h1>Loading...</h1>;
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <h1>Loading...</h1>
+      </div>
+    );
   }
 
   return (

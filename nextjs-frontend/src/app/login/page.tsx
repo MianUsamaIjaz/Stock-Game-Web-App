@@ -8,10 +8,18 @@ const Login = () => {
   const router = useRouter();
   const [error, setError] = useState("");
   const { data: session, status: sessionStatus } = useSession();
+  let adminCheck = false;
+
 
   useEffect(() => {
     if (sessionStatus === "authenticated") {
-      router.replace("/dashboard");
+      if (adminCheck) {
+        router.replace("/dashboard-admin");
+      } else {
+        console.log(adminCheck);
+        
+        router.replace("/dashboard-player");
+      }
     }
   }, [sessionStatus, router]);
 
@@ -39,18 +47,57 @@ const Login = () => {
       redirect: false,
       email,
       password,
-    });    
+    });   
+    
+    try {
+
+      let res = await fetch(`/getAdmin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+        }),
+      });
+
+      adminCheck = res.ok;
+
+    } catch (err) {
+      console.log(err);
+      
+    }
 
     if (res?.error) {
       setError("Invalid email or password");
-      if (res?.url) router.replace("/dashboard");
+      if (res?.url && adminCheck) router.replace("/dashboard-admin");
+      if (res?.url && !adminCheck) router.replace("/dashboard-player");
+
     } else {
       setError("");
+
+      if (adminCheck) {
+        router.replace("/dashboard-admin");
+      } else {
+        router.replace("/dashboard-player");
+      }
+
     }
   };
 
   if (sessionStatus === "loading") {
-    return <h1>Loading...</h1>;
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <h1>Loading...</h1>
+      </div>
+    );
   }
 
   return (
