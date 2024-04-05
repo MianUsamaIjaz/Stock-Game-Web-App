@@ -198,4 +198,6 @@ If you want to play the game, please use the following or create your own custom
 
 - The project includes a total of 34 tests, and all of them were updated after frontend and are passing according to the provided testing and database setup.
 
+- The project is completed and fully functional based on all concepts of Part 2 including some minor upgrades.
+
 
