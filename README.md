@@ -154,7 +154,7 @@ To set up and run the project, follow these steps:
 ## 2. Database Setup
 
 1. Ensure you have MongoDB installed and running on your system.
-2. Import the provided database files (admins.json and players.json) into MongoDB Compass.
+2. Import the provided database files (admins.json, players.json and games.json) into MongoDB Compass.
 3. Import these files into a database named `project3100`.
 
 ## 3. Starting the Backend Server
