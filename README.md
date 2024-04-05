@@ -1,3 +1,9 @@
+# Video Demonstration
+
+This video demonstrates the successful implementation of the Stock Game Web App and showcases the dynamic capabilities of this app in action. You can click on the thumbnail or directly access the video from this Google Drive link: https://drive.google.com/file/d/1E_y6fSuu_ApP8503vDcPjKME9tPDzcXR/view?usp=sharing
+
+ [![front_end_video](thumbnail.png)](https://drive.google.com/file/d/1E_y6fSuu_ApP8503vDcPjKME9tPDzcXR/view?usp=sharing)
+
 # Project Layout
 
 ## Directory Structure
