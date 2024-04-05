@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Footer from "@/components/Footer";
 
 const Login = () => {
   const router = useRouter();
@@ -15,9 +16,7 @@ const Login = () => {
     if (sessionStatus === "authenticated") {
       if (adminCheck) {
         router.replace("/dashboard-admin");
-      } else {
-        console.log(adminCheck);
-        
+      } else {        
         router.replace("/dashboard-player");
       }
     }
@@ -143,6 +142,7 @@ const Login = () => {
             Register Here
           </Link>
         </div>
+        <Footer />
       </div>
     )
   );

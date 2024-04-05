@@ -73,9 +73,9 @@ app.get("/stock/:stockName", async (req, res) => {
 
 });
 
-app.get("/player/:playerEmail" , async (req, res) => {
+app.post("/player" , async (req, res) => {
 
-  let email = req.data.params;
+  let email = req.body.email;
 
   let user = {email: email};
 
@@ -87,7 +87,77 @@ app.get("/player/:playerEmail" , async (req, res) => {
     res.status(404).send(null);
   }
 
-})
+});
+
+app.post("/admin" , async (req, res) => {
+
+  let email = req.body.email;
+
+  let user = {email: email};
+
+  let admin = await Admin.getAdminFromDB(user);
+
+  if (admin) {
+    res.status(200).send(admin);
+  } else {
+    res.status(404).send(null);
+  }
+
+});
+
+app.post("/generateWealth", async (req, res) => {
+
+  let email = req.body.email;
+  let totalWealth = 0;
+
+  let player = await Player.getPlayerFromDB({email: email});
+
+  if (!player) {
+    res.send(404, "player not found");
+    return;
+  }
+
+  let stocks = player.portfolio.stocks;
+
+  if (stocks.length == 0) {
+    res.send(200, totalWealth);
+    return;
+  }
+
+  for (let stock of stocks) {
+
+    let stockURL = "https://financialmodelingprep.com/api/v3/quote-order/" + stock.name + "?apikey=" + process.env.stockAPIKey;
+
+    try{
+
+      let response = await fetch(stockURL);
+      let data = await response.json();
+
+      if (!(data.length > 0)) {
+        res.send(404, "Data not found!");
+        return;
+      }
+
+      let stockPrice = data[0].price;
+      let quantity = stock.quantity;
+
+      let stockValue = stockPrice * quantity;
+
+      totalWealth += stockValue;
+
+  } catch (err) {
+    console.log(err);
+    res.send(400, err);
+  }
+
+  }
+
+  totalWealth += player.portfolio.cash;
+  res.send(200, totalWealth);
+  return;
+
+
+});
 
 // Player buying a stock
 app.post("/buy", async (req, res) => {
@@ -299,12 +369,12 @@ app.post("/createAdmin", (req, res) => {
 // Creates a new Game
 app.post("/createGame", (req, res) => {
 
-  let id = req.body.id;
+  let id = req.body.gameID;
   let name = req.body.name;
   let owner = req.body.owner;
 
   let adminAccess = allAdmins.find(admin =>
-    admin.fname === owner.fname && admin.lname === owner.lname && admin.email === owner.email
+    admin.email === owner.email
   );
 
   if (!adminAccess) {
@@ -377,7 +447,7 @@ app.post("/registerPlayer", async (req, res) => {
     );
 
     if (playerExistsinGame) {
-      res.status(403).send("Player is already in the Game!");
+      res.status(400).send("Player is already in the Game!");
       return;
     }
 
@@ -400,7 +470,7 @@ app.post("/registerPlayer", async (req, res) => {
 
     }
 
-    res.status(200).send("Player was successfully Registered for the Game.");
+    res.status(200).send(gameFound);
 
   } else {
 
@@ -437,7 +507,7 @@ app.get("/gameStatus", async (req,res) => {
   
 });
 
-app.get("/checkWinner", async (req,res) => {
+app.post("/checkWinner", async (req,res) => {
 
   let gameID = req.body.gameID;
 
@@ -446,14 +516,14 @@ app.get("/checkWinner", async (req,res) => {
   );
 
   if (!gameCheck) {
-    res.status(403).send("Game not found");
+    res.status(404).send({message: "Game not found!"});
     return;
   }
 
   let game = await Game.getGameFromDB(gameID);
 
   if (game.startTime == 0) {
-    res.status(403).send("The Game hasn't started!");
+    res.status(403).send({message: "The Game hasn't started!"});
     return;
   }
 
@@ -492,7 +562,6 @@ app.get("/checkWinner", async (req,res) => {
       }
 
       playerTotalWorth += player.portfolio.cash;
-      //console.log(playerTotalWorth);
 
       if (playerTotalWorth > winnerWorth) {
         winnerWorth = playerTotalWorth;
@@ -512,10 +581,14 @@ app.get("/checkWinner", async (req,res) => {
 });
 
 // First Own Feature (Viewing other player's portfolios)
-app.get("/otherPlayersPortfolio", async (req, res) => {
+app.post("/otherPlayersPortfolio", async (req, res) => {
 
   let gameID = req.body.gameID;
-  let player = req.body.player;  // The player requesting to view other's portfolios
+  let email = req.body.email;  // The player requesting to view other's portfolios
+
+  let player = {
+    email: email
+  };
 
   let game = await Game.getGameFromDB(gameID);
   if (!game) {
@@ -584,7 +657,8 @@ app.post("/leaderboard", async (req, res) => {
   let leaderboard = gamePlayers.map(player => {
     return {
       name: `${player.fname} ${player.lname}`,
-      cash: player.portfolio.cash
+      email: player.email,
+      portfolio: player.portfolio
     };
   });
 
@@ -629,6 +703,31 @@ app.post("/getAdmin", async (req, res) => {
     res.status(200).send(true);
   } else {
     res.status(404).send(false);
+  };
+
+});
+
+app.post("/getAllGames", async (req, res) => {
+
+  let data = [];
+
+  
+
+  if (allGames.length >= 1) {
+
+    for (let game of allGames) {
+
+      let getGame = await Game.getGameFromDB(game.id);
+
+      data.push(getGame);
+
+    }
+
+
+
+    res.status(200).send(data);
+  } else {
+    res.status(404).send(null);
   };
 
 });

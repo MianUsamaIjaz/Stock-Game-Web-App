@@ -20,22 +20,26 @@ const DashboardAdmin = async () => {
       <section className="text-center mt-8 mb-48">
       <div className="grid grid-cols-3 gap-32">
           
-          {/* Get Stock Details */}
           <Link className="dashboard-link" href="/stock">
             Get Stock Details
           </Link>
-          {/* View Profile */}
+
           <Link className="dashboard-link" href="/profile">
             View Profile
           </Link>
-          {/* Leaderboard */}
+
           <Link className="dashboard-link" href="/leaderboard">
             Leaderboard
           </Link>
-          {/* Join a Game */}
-          <Link className="dashboard-link" href="/join-game">
+
+          <Link className="dashboard-link" href="/createGame">
             Create a Game
           </Link>
+
+          <Link className="dashboard-link" href="/declareWinner">
+            Declare Winner
+          </Link>
+          
         </div>
         </section>
 

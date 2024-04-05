@@ -116,9 +116,7 @@ export class Game {
             let gameData = await collection.find({}).toArray();
 
             for (let data of gameData) {
-
-                console.log("data id : " + data.id);
-
+                
                 if ( data.id === gameID ) {
                     return data;
                 };

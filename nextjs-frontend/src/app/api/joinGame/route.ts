@@ -1,38 +1,35 @@
 import { MongoClient } from 'mongodb';
 import { NextResponse } from 'next/server';
-//import { NextResponse } from "next/server";
 
 let uri = "mongodb://localhost:27017";
 let client = new MongoClient(uri);
 
-export const leaderboard = async (request: any) => {
+export const joinGame = async (request: any) => {
+
     
-    let { gameID } = await request.json();
-    
+    let { gameID, email } = await request.json();     
+    let player = {
+        email: email
+    };    
 
     await client.connect();
 
     try {
-        let res = await fetch(`http://localhost:4000/leaderboard`, {
+        let res = await fetch(`http://localhost:4000/registerPlayer`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              gameID,
+                gameID,
+                player,
             }),
           });
 
           let data = await res.json();
-
-          let players = [];
-
-          for (let i = 0; i < data.length; i++) {
-            players.push(data[i]);
-          };
-
-          let dataToBeSend = JSON.stringify(players);
           
+          let dataToBeSend = JSON.stringify(data);          
+
           return new NextResponse(dataToBeSend, { status: 200 });
           
     } catch (err: any) {        
@@ -43,5 +40,5 @@ export const leaderboard = async (request: any) => {
 
 };
 
-export const handler = leaderboard;
+export const handler = joinGame;
 export { handler as GET, handler as POST };

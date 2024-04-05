@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import { Admin } from "../../../admin.mjs";
 
 const Navbar = (user: any) => {
   const { data: session }: any = useSession();
@@ -136,8 +135,8 @@ const Navbar = (user: any) => {
                     </Link>
                   </li>
                   <li className="py-2 px-4 hover:bg-gray-800">
-                    <Link href="/settings" passHref onClick={closeMenu}>
-                       Settings
+                    <Link href="/joinGame" passHref onClick={closeMenu}>
+                       View Games
                     </Link>
                   </li>
                 </ul>

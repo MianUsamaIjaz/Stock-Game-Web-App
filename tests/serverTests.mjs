@@ -2,7 +2,7 @@ import assert from 'assert'
 import supertest from 'supertest'
 import { dbClean, dbCount, dbClose } from "./db.mjs"
 
-var request = supertest("http://localhost:3000")
+var request = supertest("http://localhost:4000")
 
 after(async () => {  
     await dbClose()
@@ -143,14 +143,14 @@ describe('GET /stock', function() {
 
     describe('POST /createGame', function() {
         var tests = [
-            { id: 1, name: 'Test Game', owner: {fname: 'Cillian', lname: 'Murphy', email: 'cillian@test.com'}, expect: 200 },  // Admin creating game should be okay
-            { id: 2, name: 'Test Game 2', owner: {fname: 'Mian', lname: 'Usama', email: 'mianusama@test.com'}, expect: 403 }, // Not an admin
+            { gameID: 1, name: 'Test Game', owner: {fname: 'Cillian', lname: 'Murphy', email: 'cillian@test.com'}, expect: 200 },  // Admin creating game should be okay
+            { gameID: 2, name: 'Test Game 2', owner: {fname: 'Mian', lname: 'Usama', email: 'mianusama@test.com'}, expect: 403 }, // Not an admin
         ];
     
         tests.forEach(function(test) {
             it(`POST /createGame for ${test.name}`, async function() {
                 let requestBody = {
-                    id: test.id,
+                    gameID: test.gameID,
                     name: test.name,
                     owner: test.owner
                 };
@@ -160,7 +160,7 @@ describe('GET /stock', function() {
                 assert.equal(response.status, test.expect);
 
                 if (response.status == 200) {
-                    assert.equal(response.body.id, test.id);
+                    assert.equal(response.body.id, test.gameID);
                 }
             });
         });
@@ -196,19 +196,19 @@ describe('GET /stock', function() {
 
     });
 
-    describe('GET /leaderboard', function() {
+    describe('POST /leaderboard', function() {
         var tests = [
             { gameID: 1 , expect: 200},
             { gameID: 5, expect: 404}
         ];
     
         tests.forEach(function(test) {
-            it(`GET /leaderboard for Game ${test.gameID}`, async function() {
+            it(`POST /leaderboard for Game ${test.gameID}`, async function() {
                 let requestBody = {
                     gameID: test.gameID,
                 };
     
-                let response = await request.get('/leaderboard').send(requestBody);
+                let response = await request.post('/leaderboard').send(requestBody);
     
                 assert.equal(response.status, test.expect);
 
@@ -219,16 +219,16 @@ describe('GET /stock', function() {
 
     
 
-    describe('GET /checkWinner', function() {
+    describe('POST /checkWinner', function() {
         var tests = [
             { gameID: 1, expect: 200 },  // On purpose increased Mian Usama's portfolio value up so he could be the winner
-            { gameID: 5, expect: 403 }  // Game does not exist
+            { gameID: 5, expect: 404 }  // Game does not exist
         ];
     
         tests.forEach(function(test) {
-            it(`GET /checkWinner for game ${test.gameID}`, async function() {
+            it(`POST /checkWinner for game ${test.gameID}`, async function() {
                 let requestBody = { gameID: test.gameID };
-                let response = await request.get('/checkWinner').send(requestBody);
+                let response = await request.post('/checkWinner').send(requestBody);
        
                 assert.equal(response.status, test.expect);
 
@@ -239,16 +239,16 @@ describe('GET /stock', function() {
         });
     });
 
-    describe('GET /otherPlayersPortfolio', function() {
+    describe('POST /otherPlayersPortfolio', function() {
         var tests = [
-            { gameID: 1, player: { fname: "Usama", lname: "Ijaz", email: 'usamaijaz@test.com' }, expect: 200 },
-            { gameID: 5, player: { email: 'player@example.com' }, expect: 404 }
+            { gameID: 1, email: 'usamaijaz@test.com', expect: 200 },
+            { gameID: 5,email: 'player@example.com', expect: 404 }
         ];
     
         tests.forEach(function(test) {
-            it(`GET /otherPlayersPortfolio for game ${test.gameID} and player ${test.player.fname} ${test.player.lname}`, async function() {
-                let requestBody = { gameID: test.gameID, player: test.player };
-                let response = await request.get('/otherPlayersPortfolio').send(requestBody);
+            it(`POST /otherPlayersPortfolio for game ${test.gameID}`, async function() {
+                let requestBody = { gameID: test.gameID, email: test.email };
+                let response = await request.post('/otherPlayersPortfolio').send(requestBody);
        
                 assert.equal(response.status, test.expect);
     

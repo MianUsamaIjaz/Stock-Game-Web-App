@@ -7,4 +7,14 @@
   "email": "cillian@test.com",
   "isAdmin": true,
   "password": "123"
+},
+{
+  "_id": {
+    "$oid": "660a5d55b028ef010ec7004b"
+  },
+  "fname": "Admin",
+  "lname": "Test",
+  "email": "admin@test.com",
+  "password": "$2a$05$mkpX9jdokUw7oUx6IJL0UOvCIGBD29ZaBm28p3F7YHui3olUXjUGK",
+  "isAdmin": true
 }]

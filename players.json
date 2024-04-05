@@ -6,13 +6,19 @@
   "lname": "Usama",
   "email": "mianusama@test.com",
   "portfolio": {
-    "cash": 1986,
+    "cash": 2852.14,
     "stocks": [
       {
         "name": "AAPL",
         "quantity": 2,
-        "lastBuyingPrice": 171.37,
-        "lastSellingPrice": 171.37
+        "lastBuyingPrice": 168.82,
+        "lastSellingPrice": 168.82
+      },
+      {
+        "name": "WMT",
+        "quantity": 2,
+        "lastBuyingPrice": 59.43,
+        "lastSellingPrice": null
       }
     ]
   },
@@ -26,19 +32,19 @@
   "lname": "Ijaz",
   "email": "usamaijaz@test.com",
   "portfolio": {
-    "cash": 654.26,
+    "cash": 1318.8400000000001,
     "stocks": [
       {
-        "lastBuyingPrice": 171.37,
-        "lastSellingPrice": 171.37,
+        "lastBuyingPrice": 168.82,
+        "lastSellingPrice": 168.82,
         "name": "AAPL",
-        "quantity": 8
+        "quantity": 6
       },
       {
         "name": "WMT",
-        "quantity": 0,
-        "lastBuyingPrice": 61.45,
-        "lastSellingPrice": 61.45
+        "quantity": 2,
+        "lastBuyingPrice": 59.5,
+        "lastSellingPrice": 59.5
       }
     ]
   },
@@ -76,4 +82,109 @@
     ]
   },
   "password": "123"
+},
+{
+  "_id": {
+    "$oid": "660648b84e68d5289ef22090"
+  },
+  "fname": "Mian Usama Ijaz",
+  "lname": "",
+  "email": "mianusama9090@gmail.com",
+  "password": "",
+  "portfolio": {
+    "cash": 1000,
+    "stocks": []
+  }
+},
+{
+  "_id": {
+    "$oid": "660bcfcc05af4c1f363fd30f"
+  },
+  "fname": "Navbar",
+  "lname": "Test",
+  "email": "navbar@test.com",
+  "password": "$2a$05$Rwz9IvULFv6pbjd40hoJ7OZwjxmRlX8sX0SbSjdhKgrzDieLcVvWS",
+  "portfolio": {
+    "cash": 429.66999999999996,
+    "stocks": [
+      {
+        "name": "AAPL",
+        "quantity": 3,
+        "lastBuyingPrice": 168.84,
+        "lastSellingPrice": 169.65
+      },
+      {
+        "name": "WMT",
+        "quantity": 1,
+        "lastBuyingPrice": 59.16,
+        "lastSellingPrice": 59.43
+      }
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "660f89690d5f52fc06907857"
+  },
+  "fname": "Test",
+  "lname": "Player 1",
+  "email": "testp1@test.com",
+  "password": "$2a$05$tPRwNm.h4PlVMwOz7JJFs.8css1kXXfHAXVtXH4LWW1fWLHtI2Dri",
+  "portfolio": {
+    "cash": 760,
+    "stocks": [
+      {
+        "name": "WMT",
+        "quantity": 4,
+        "lastBuyingPrice": 59.5,
+        "lastSellingPrice": 59.5
+      }
+    ]
+  }
+},
+{
+  "_id": {
+    "$oid": "660f94bd0d5f52fc06907858"
+  },
+  "fname": "Test",
+  "lname": "Player 2",
+  "email": "testp2@test.com",
+  "password": "$2a$05$ySZReRiFLJk4fEOUnnbB1OukPFiM93SsFEx6LFwmYTgsq2caxsqUa",
+  "portfolio": {
+    "cash": 1000,
+    "stocks": []
+  }
+},
+{
+  "_id": {
+    "$oid": "660f94cf0d5f52fc06907859"
+  },
+  "fname": "Test",
+  "lname": "Player 3",
+  "email": "testp3@test.com",
+  "password": "$2a$05$l865yBy2IL8xTyIQoaaDSOdzu2tgcj.XRbz4hqt.R00YGggAQhU5e",
+  "portfolio": {
+    "cash": 1000,
+    "stocks": []
+  }
+},
+{
+  "_id": {
+    "$oid": "660fab780d5f52fc0690785c"
+  },
+  "fname": "Test",
+  "lname": "Player 4",
+  "email": "testp4@test.com",
+  "password": "$2a$05$z2nzdYOHWIDddok.iiy89.nIjxD/45bsrBomAt0vVDNoMidqzPc6S",
+  "portfolio": {
+    "cash": 879,
+    "stocks": [
+      {
+        "name": "WMT",
+        "quantity": 2,
+        "lastBuyingPrice": 59.5,
+        "lastSellingPrice": 59.5
+      }
+    ]
+  }
 }]

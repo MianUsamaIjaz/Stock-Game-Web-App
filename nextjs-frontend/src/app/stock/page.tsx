@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import Footer from "@/components/Footer";
 
 const Stock: React.FC = () => {
 
@@ -73,6 +74,7 @@ const Stock: React.FC = () => {
         </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

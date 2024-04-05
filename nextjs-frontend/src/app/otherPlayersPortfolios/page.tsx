@@ -1,22 +1,29 @@
 "use client";
 import React, { useState } from "react";
+import { useSession } from "next-auth/react";
+import Footer from "@/components/Footer";
 
-let Leaderboard: React.FC = () => {
+let otherPlayersPortfolios: React.FC = () => {
+
+  const { data: session, status }: any = useSession();
   const [gameID, setGameID] = useState<string>("");
-  const [leaderboard, setLeaderboard] = useState<any>(null);
+  const [portfolios, setPortfolios] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    let email = session.user.email;
+
     try {
-      let res = await fetch("/api/leaderboard", {
+      let res = await fetch("/api/otherPlayersPortfolios", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           gameID,
+          email
         }),
       });
 
@@ -26,17 +33,32 @@ let Leaderboard: React.FC = () => {
       }
 
       const data = await res.json();
-      setLeaderboard(data); // No need to stringify here
+      setPortfolios(data);
 
     } catch (err) {
       console.log(err);
     }
   };
 
+  if (!session) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <h1>Loading...</h1>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="bg-[#212121] p-8 rounded shadow-md w-900">
-        <h1 className="text-4xl text-center font-semibold mb-8">Leaderboard</h1>
+        <h1 className="text-4xl text-center font-semibold mb-8">View Other Players Portfolios</h1>
         <form onSubmit={handleSubmit} className="text-center">
           <input
             type="text"
@@ -54,11 +76,11 @@ let Leaderboard: React.FC = () => {
           </button>
           {error && <p className="text-red-600 text-[16px] mb-4">{error}</p>}
         </form>
-        {leaderboard && (
+        {portfolios && (
           <div className="mt-8 rounded-lg shadow-md p-6">
             <h2 className="text-2xl font-semibold mb-4 text-center">Leaderboard</h2>
-            <p className="text-white-700 mb-4">Number of Players: {leaderboard.length}</p>
-            {leaderboard.map((item: any, index: number) => (
+            <p className="text-white-700 mb-4">Number of Players: {portfolios.length}</p>
+            {portfolios.map((item: any, index: number) => (
               <div
                 key={index}
                 className="grid grid-cols-2 gap-x-4 gap-y-2 hover:bg-gray-800 transition duration-300 rounded-md p-2"
@@ -67,18 +89,42 @@ let Leaderboard: React.FC = () => {
                   <p className="text-lg font-semibold">Name</p>
                   <p className="text-white-700">{item.name}</p>
                 </div>
-                <div className="flex flex-col">
-                  <p className="text-lg font-semibold">Cash</p>
-                  <p className="text-white-700">{item.portfolio.cash}</p>
-                </div>
+
+
+                <div>
+          <h2 className="text-2xl font-semibold mb-4">Portfolio</h2>
+          <div className="border border-gray-700 p-4 rounded-lg bg-gray-700">
+            <div className="mb-4">
+              <p className="text-lg font-medium text-white pt-2">Cash: ${item.portfolio.cash.toFixed(2)}</p>
+            </div>
+            <div>
+                <h3 className="text-xl font-semibold mb-2">Stocks:</h3>
+                {item.portfolio.stocks.length === 0 ? (
+                    <p className="text-lg text-white">No Stocks Bought!</p>
+                ) : (
+                <ul>
+                {item.portfolio.stocks.map((stock: any, index: any) => (
+                    <li key={index} className="mb-2">
+                    <p className="text-lg text-white">{stock.name}: {stock.quantity} shares, last buying price was ${stock.lastBuyingPrice}/share.</p>
+                    </li>
+                ))}
+                </ul>
+                )}
+            </div>
+
+          </div>
+        </div>
+
+
               </div>
             ))}
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
   
 };
 
-export default Leaderboard;
+export default otherPlayersPortfolios;

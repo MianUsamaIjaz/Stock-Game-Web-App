@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import Footer from "@/components/Footer";
 
 let Register = () => {
   let [error, setError] = useState("");
@@ -139,6 +140,7 @@ let Register = () => {
             Login with an existing account
           </Link>
         </div>
+        <Footer />
       </div>
     )
   );

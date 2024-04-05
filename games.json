@@ -1,0 +1,60 @@
+[{
+  "_id": {
+    "$oid": "660f9dca7f064e9872af4c9f"
+  },
+  "id": 2,
+  "name": "Test Game 2",
+  "owner": {
+    "email": "admin@test.com"
+  },
+  "startTime": {
+    "$numberLong": "1712299619679"
+  },
+  "endTime": {
+    "$numberLong": "1712299679679"
+  },
+  "registeredPlayers": [
+    {
+      "email": "testp1@test.com"
+    },
+    {
+      "email": "testp2@test.com"
+    },
+    {
+      "email": "testp3@test.com"
+    },
+    {
+      "email": "testp4@test.com"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "660fac23a4bd4b21ce541a67"
+  },
+  "id": 6,
+  "name": "Testing...",
+  "owner": {
+    "email": "admin@test.com"
+  },
+  "startTime": {
+    "$numberLong": "1712303241638"
+  },
+  "endTime": {
+    "$numberLong": "1712303301638"
+  },
+  "registeredPlayers": [
+    {
+      "email": "testp1@test.com"
+    },
+    {
+      "email": "testp2@test.com"
+    },
+    {
+      "email": "testp3@test.com"
+    },
+    {
+      "email": "testp4@test.com"
+    }
+  ]
+}]

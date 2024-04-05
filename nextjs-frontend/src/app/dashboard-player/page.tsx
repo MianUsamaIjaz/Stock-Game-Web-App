@@ -19,28 +19,33 @@ const DashboardPlayer = async () => {
       
       <section className="text-center mt-8 mb-48">
       <div className="grid grid-cols-3 gap-32">
-          {/* Buy/Sell Stock */}
+
           <Link className="dashboard-link" href="/buy">
             Buy Stock
           </Link>
+
           <Link className="dashboard-link" href="/sell">
             Sell Stock
           </Link>
-          {/* Get Stock Details */}
+
           <Link className="dashboard-link" href="/stock">
             Get Stock Details
           </Link>
-          {/* View Profile */}
+
           <Link className="dashboard-link" href="/profile">
             View Profile
           </Link>
-          {/* Leaderboard */}
+
           <Link className="dashboard-link" href="/leaderboard">
             Leaderboard
           </Link>
-          {/* Join a Game */}
-          <Link className="dashboard-link" href="/join-game">
+
+          <Link className="dashboard-link" href="/joinGame">
             Join a Game
+          </Link>
+          
+          <Link className="dashboard-link" href="/otherPlayersPortfolios">
+            View Other Players Portfolios
           </Link>
         </div>
         </section>
