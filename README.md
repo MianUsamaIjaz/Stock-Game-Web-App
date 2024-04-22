@@ -142,13 +142,13 @@ To set up and run the project, follow these steps:
 
     ```bash
     npm install
-4. Create a .env file in the main project folder and set `stockAPIKey = eBVCeMBXRMkLRfR496hXGpWOxgSwFcaS`
+4. Create a .env file in the main project folder and set `stockAPIKey = YOUR_API_KEY`
 5. For frontend, make a .env file inside `nextjs-frontend` directory and include the following in it:
 `NEXTAUTH_URL="http://localhost:3000/"`
 `NEXTAUTH_SECRET="COMP3100project"`
     #### For SignIn with GitHub:
-    `GITHUB_ID=f02031cba4cb46944aa5`
-    `GITHUB_SECRET=7c7a417a59da290058022e2bac0f719ccef2ae17`
+    `GITHUB_ID=YOUR_GITHUB_ID`
+    `GITHUB_SECRET=YOUR_GITHUB_SECRET`
 
 
 ## 2. Database Setup
