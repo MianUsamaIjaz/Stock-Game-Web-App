@@ -47,6 +47,84 @@ This video demonstrates the successful implementation of the Stock Game Web App 
 
 The architecture emphasizes modularity, separation of concerns, and scalability to accommodate both frontend and backend development
 
+
+# Project Setup and Run Instructions
+
+To set up and run the project, follow these steps:
+
+## 1. Installation
+
+1. Download the entire project folder.
+2. Navigate to the project directory in your terminal.
+3. Run the following command to install all required packages:
+
+    ```bash
+    npm install
+4. Create a .env file in the main project folder and set `stockAPIKey = YOUR_API_KEY`
+5. For frontend, make a .env file inside `nextjs-frontend` directory and include the following in it:
+`NEXTAUTH_URL="http://localhost:3000/"`
+`NEXTAUTH_SECRET="COMP3100project"`
+    #### For SignIn with GitHub:
+    `GITHUB_ID=YOUR_GITHUB_ID`
+    `GITHUB_SECRET=YOUR_GITHUB_SECRET`
+
+
+## 2. Database Setup
+
+1. Ensure you have MongoDB installed and running on your system.
+2. Import the provided database files (admins.json, players.json and games.json) into MongoDB Compass.
+3. Import these files into a database named `project3100`.
+
+## 3. Starting the Backend Server
+
+After installing dependencies and setting up the database, start the server by running the following command:
+
+    node server.mjs
+
+The backend server will start on `localhost:4000`.
+
+## 4. Starting the Frontend Server
+
+After starting the backend server, now start the frontend server by running the following command after navigating to `project > nextjs-frontend`:
+
+    npm install
+
+then:
+
+    npm run dev
+
+## 5. Running Tests
+
+Open a separate terminal window or tab, navigate to the `tests` folder within the project directory, and run the following command to execute the tests:
+
+    npx mocha serverTests.mjs
+
+
+## 6. Login Info
+
+If you want to play the game, please use the following or create your own custom player/admin:
+
+### Play as a Player:
+#### Email: `testp1@test.com` Password: `testp1@test.com`
+#### Email: `testp2@test.com` Password: `testp1@test.com`
+#### Email: `testp3@test.com` Password: `testp1@test.com`
+#### Email: `testp4@test.com` Password: `testp1@test.com`
+
+
+### Play as an Admin:
+#### Email: `admin@test.com` Password: `admin@test.com`
+
+## 7. Additional Notes
+
+- If you need to rerun the tests for any reason, delete the two last players, two last admins, and the `id = 1` game from relative collections inside MongoDB Compass.
+
+- Afterward, you can rerun the tests using the command provided in step 5.
+
+- The project includes a total of 34 tests, and all of them were updated after frontend and are passing according to the provided testing and database setup.
+
+- The project is completed and fully functional based on all concepts of Part 2 including some minor upgrades.
+
+
 # HTTP Request/Service Documentation
 
 This document provides an overview of the HTTP requests and services supported by the project.
@@ -128,82 +206,3 @@ This document provides an overview of the HTTP requests and services supported b
 - **Description:** Retrieves the leaderboard for a specific game, listing players based on their cash amounts in descending order.
 - **Feature Supported:** Viewing the leaderboard of a game. (Own Feature)
 - **Related Tests:** `POST /leaderboard` Test cases verifying the retrieval of the leaderboard.
-
-
-# Project Setup and Run Instructions
-
-To set up and run the project, follow these steps:
-
-## 1. Installation
-
-1. Download the entire project folder.
-2. Navigate to the project directory in your terminal.
-3. Run the following command to install all required packages:
-
-    ```bash
-    npm install
-4. Create a .env file in the main project folder and set `stockAPIKey = YOUR_API_KEY`
-5. For frontend, make a .env file inside `nextjs-frontend` directory and include the following in it:
-`NEXTAUTH_URL="http://localhost:3000/"`
-`NEXTAUTH_SECRET="COMP3100project"`
-    #### For SignIn with GitHub:
-    `GITHUB_ID=YOUR_GITHUB_ID`
-    `GITHUB_SECRET=YOUR_GITHUB_SECRET`
-
-
-## 2. Database Setup
-
-1. Ensure you have MongoDB installed and running on your system.
-2. Import the provided database files (admins.json, players.json and games.json) into MongoDB Compass.
-3. Import these files into a database named `project3100`.
-
-## 3. Starting the Backend Server
-
-After installing dependencies and setting up the database, start the server by running the following command:
-
-    node server.mjs
-
-The backend server will start on `localhost:4000`.
-
-## 4. Starting the Frontend Server
-
-After starting the backend server, now start the frontend server by running the following command after navigating to `project > nextjs-frontend`:
-
-    npm install
-
-then:
-
-    npm run dev
-
-## 5. Running Tests
-
-Open a separate terminal window or tab, navigate to the `tests` folder within the project directory, and run the following command to execute the tests:
-
-    npx mocha serverTests.mjs
-
-
-## 6. Login Info
-
-If you want to play the game, please use the following or create your own custom player/admin:
-
-### Play as a Player:
-#### Email: `testp1@test.com` Password: `testp1@test.com`
-#### Email: `testp2@test.com` Password: `testp1@test.com`
-#### Email: `testp3@test.com` Password: `testp1@test.com`
-#### Email: `testp4@test.com` Password: `testp1@test.com`
-
-
-### Play as an Admin:
-#### Email: `admin@test.com` Password: `admin@test.com`
-
-## 6. Additional Notes
-
-- If you need to rerun the tests for any reason, delete the two last players, two last admins, and the `id = 1` game from relative collections inside MongoDB Compass.
-
-- Afterward, you can rerun the tests using the command provided in step 5.
-
-- The project includes a total of 34 tests, and all of them were updated after frontend and are passing according to the provided testing and database setup.
-
-- The project is completed and fully functional based on all concepts of Part 2 including some minor upgrades.
-
-
